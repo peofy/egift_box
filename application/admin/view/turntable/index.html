@@ -1,0 +1,79 @@
+{extend name="common:base" /}
+
+{block name="content"}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{$meta_title}</h5>
+                    <div class="pull-right" style="margin-top:-8px;">
+                        <!-- <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加类别</a> -->
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row" style="margin-left:0px;" >
+                        <!-- <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a> -->
+                        <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>订单id</th>
+                                <th>订单号</th>
+                                <th>礼盒数量</th>
+                                <th>下单时间</th>
+                                <th>开奖时间</th>
+                                <th>结束时间</th>
+                                <th>盒子id</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.order_id}</td>
+                                <td>{$vo.order_sn}</td>
+                                <td>{$vo.goods_num|default="0"}</td>
+                                <td>{$vo.add_time|date="Y-m-d H:i:s",###}</td>
+                                <td>{$vo.lottery_time|date="Y-m-d H:i:s",###}</td>
+                                {if condition="$vo.overdue_time"}
+                                    <td>{$vo.overdue_time|date="Y-m-d H:i:s",###}</td>
+                                {else/}
+                                    <td></td>
+                                {/if}
+                                <td>{$vo.box_id}</td>
+                                <td>
+                                    <a class="btn btn-default delete" href="{:url('edit',['order_id'=>$vo.order_id],false)}" >设置/查看中奖名单</i></a>
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <ul class="pagination">
+                        {$list->render()}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+{block name='script'}
+<script src="__LIB__/layer/layer.js"></script>
+<script>
+    function del(obj,id){
+        if(window.confirm('确认删除该分类吗？')){
+            $.post("{:url('del')}",{'id':id},function(data){
+                alert(data.msg);
+                if(data.status){
+                    $(obj).parents('tr').remove();
+                }
+            },'json');
+        }
+    }
+</script>
+{/block}

@@ -1,0 +1,67 @@
+{extend name="common:base" /}
+
+{block name="content"}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{$meta_title}</h5>
+                    <div class="pull-right" style="margin-top:-8px;">
+                            <a class="btn btn-info" href="{:url('add_cate')}"><i class="fa fa-plus"></i> 添加场景</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row" style="margin-left:0px;" >
+                        <!-- <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a> -->
+                        <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>图片</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.id}</td>
+                                <td>{$vo.name}</td>
+                                <td><img src="{$vo.picture}" width="60"></td>
+                                <td>
+                                    <a class="btn btn-default delete" href="{:url('add_cate',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <ul class="pagination">
+                        {$list->render()}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+{block name='script'}
+<script>
+    function del(obj,id){
+        if(window.confirm('确认删除该分类吗？')){
+            $.post("{:url('del_cate')}",{'id':id},function(data){
+                alert(data.msg);
+                if(data.status){
+                    $(obj).parents('tr').remove();
+                }
+            },'json');
+        }
+    }
+</script>
+{/block}

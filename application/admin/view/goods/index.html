@@ -1,0 +1,327 @@
+{extend name="common:base" /}
+
+{block name="content"}
+<style>
+  th span{
+    /* margin-left: 20px; */
+    cursor:pointer;
+  }
+  /* .red{
+    color: red;
+  } */
+  .sort{    height: 24px; line-height: 24px; width: 50px; border: #FC6 solid 1px;}
+  .triangle-box{
+    position: relative;
+    top: 3px;
+    margin-left: 5px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+  }
+  .triangle-s{
+    position: absolute;
+    top:-10px;
+    width: 0;
+    height: 0;
+    border-width: 8px;
+    border-style: solid;
+    border-color:  transparent transparent #e7eaec transparent ;
+  }
+  .triangle-s:hover{
+    border-color:  transparent transparent #000 transparent ;
+  }
+  .Highlight-s{
+    border-color:  transparent transparent #000 transparent!important;
+  }
+  .Highlight-x{
+    border-color: #000 transparent transparent transparent!important;
+  }
+  .triangle-x{
+    position: absolute;
+    bottom:-10px;
+    width: 0;
+    height: 0;
+    border-width: 8px;
+    border-style: solid;
+    border-color:  #e7eaec transparent transparent transparent;
+  }
+  .triangle-x:hover{
+    border-color: #000 transparent transparent transparent;
+  }
+  .select.input-sm{height: 32px;}
+</style>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{$meta_title}</h5>
+                    <div class="pull-right" style="margin-top:-8px;">
+                            <a class="btn btn-info" href="{:url('goods/add')}"><i class="fa fa-plus"></i> 添加商品</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="row">
+                    <form method="get" action="">
+
+                        <div class="col-sm-2 m-b-xs">
+                            <select name="is_show" class="input-sm form-control input-s-sm inline">
+                                <option value="">选择商品状态</option>
+                                <option {if condition="$is_show eq '1' "} selected {/if} value="1">已上架</option>
+                                <option {if condition="$is_show heq 0 "} selected {/if} value="0">未上架</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <div class="input-group"><input type="text" name="goods_name" value="{$goods_name}" placeholder="搜索商品名称" class="input-sm form-control"> </div>
+                        </div>
+
+                        <div class="col-sm-2 m-b-xs">
+                            <select name="cat_id1" class="input-sm form-control input-s-sm inline">
+                                <option value="0">选择一级分类</option>
+                                {volist name="cat_id11" id="vo"}
+                                    <option {if condition="$vo.cat_id eq $cat_id1"} selected {/if} value="{$vo.cat_id}">{$vo.cat_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="col-sm-2 m-b-xs">
+                            <select name="goods_attr1" class="input-sm form-control input-s-sm inline">
+                                <option value="0">选择一级栏目</option>
+                                {volist name="goods_attr" id="vo"}
+                                    <option {if condition="$vo.id eq $goods_attr1"} selected {/if} value="{$vo.id}">{$vo.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+
+                        <div class="col-sm-2 m-b-xs">
+                            <select name="brand_id" class="input-sm form-control input-s-sm inline">
+                                <option value="0">选择品牌</option>
+                                {volist name="goods_brand" id="vo"}
+                                    <option {if condition="$vo.id eq $brand_id"} selected {/if} value="{$vo.id}">{$vo.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+
+
+
+                        <div class="col-sm-3" style="width:10%;">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-sm btn-primary"> 搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+
+                    <div class="row" style="margin-left:0px;" >
+                        <a class="btn btn-default delete" href="{:url('Goods/add')}" >添加商品 </i></a>
+                        <a class="btn btn-default delete" onclick="is_show_all(1)" href="javascript:;" >批量上架 </i></a>
+                        <a class="btn btn-default delete" onclick="is_show_all(0)" href="javascript:;" >批量下架 </i></a>
+                        <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a>
+
+                    </div>
+
+                    <div class="table-responsive">
+                        <form action="{:URL('Admin/delAll')}" method="post">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+
+                                <th><input class="ch_all" type="checkbox">ID</th>
+                                <th>一级分类 <span class="triangle-box"><span class="triangle-s" data-id="cat_id1" onclick="order(this)"></span><span class="triangle-x" data-id="cat_id1 desc" onclick="order(this)"></span></span></th>
+                                <th>一级栏目 <span class="triangle-box"><span class="triangle-s" data-id="goods_attr1" onclick="order(this)"></span><span class="triangle-x" data-id="goods_attr1 desc" onclick="order(this)"></span></span></th>
+                                <th>商品 <span class="triangle-box"><span class="triangle-s" data-id="goods_name" onclick="order(this)"></span><span class="triangle-x" data-id="goods_name desc" onclick="order(this)"></span></span></th>
+                                <th>品牌 <span class="triangle-box"><span class="triangle-s" data-id="brand_name" onclick="order(this)"></span><span class="triangle-x" data-id="brand_name desc" onclick="order(this)"></span></span></th>
+                                <th>商品状态 <span class="triangle-box"><span class="triangle-s" data-id="is_show" onclick="order(this)"></span><span class="triangle-x" data-id="is_show desc" onclick="order(this)"></span></span></th>
+                                <th>商品价格（元）<span class="triangle-box"><span class="triangle-s" data-id="price" onclick="order(this)"></span><span class="triangle-x" data-id="price desc" onclick="order(this)"></span></span></th>
+                                <th>库存<span class="triangle-box"><span class="triangle-s" data-id="stock" onclick="order(this)"></span><span class="triangle-x" data-id="stock desc" onclick="order(this)"></span></span></th>
+                                {if condition="$goods_attr1 eq 5"}
+                                    <th>排序<span class="triangle-box"><span class="triangle-s" data-id="sort" onclick="order(this)"></span><span class="triangle-x" data-id="sort desc" onclick="order(this)"></span></span></th>
+                                {/if}
+                                <th>上架时间<span class="triangle-box"><span class="triangle-s" data-id="add_time" onclick="order(this)"></span><span class="triangle-x" data-id="add_time desc" onclick="order(this)"></span></span></th>
+                                <th>首页推荐<span class="triangle-box"><span class="triangle-s" data-id="is_recommend" onclick="order(this)"></span><span class="triangle-x" data-id="is_recommend desc" onclick="order(this)"></span></span></th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td><input type="checkbox" class="i-checks ch_item" name="goods_id[]"   value="{$vo.goods_id}">{$vo.goods_id}</td>
+                                <td>{$vo.c1_name}</td>
+                                <td>{$vo.t1_name}</td>
+                                <td>{$vo.goods_name}</td>
+                                <td>{$vo.brand_name}</td>
+                                <td>{if condition="$vo.is_show"}已上架{else /}未上架{/if}</td>
+                                <td>{$vo.price}</td>
+                                <td>{$vo.stock}</td>
+                                <!-- <td>{$vo.number_sales}</td> -->
+                                {if condition="$goods_attr1 eq 5"}
+                                    <td><input type="text" name="1" data-id="{$vo.goods_id}" value="{$vo.sort}" class="sort" onchange="goods_sort(this)"></td>
+                                {/if}
+                                <td>{$vo.add_time|date="Y-m-d",###}</td>
+                                <td align="left" axis="col0">
+                                        <div style="text-align: left; width: 30px;">
+                                            {if condition='$vo.is_recommend eq 1'}
+                                            <span onClick="changeTableVal('goods','goods_id','{$vo.goods_id}','is_recommend',this)">
+                                                        <i class="fa fa-check-circle"></i>是</span>
+                                            {else/}
+                                            <span onClick="changeTableVal('goods','goods_id','{$vo.goods_id}','is_recommend',this)">
+                                                        <i class="fa fa-ban"></i>否</span>
+                                            {/if}
+                                        </div>
+                                    </td>
+                                <td>
+                                    <!-- <a class="btn btn-default delete" href="{:url('Goods/comment_list',['goods_id'=>$vo.goods_id],false)}" >评论 </i></a> -->
+                                    <a class="btn btn-default delete" href="{:url('Goods/edit',['goods_id'=>$vo.goods_id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" is_show="{$vo.is_show}" onclick="is_show(this,{$vo.goods_id})" href="javascript:;" >{if condition="$vo.is_show"}下架{else /}上架{/if} </i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.goods_id})" href="javascript:;" >删除 </i></a>
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                        </form>
+                    </div>
+                    <ul class="pagination">
+                        {$list->render()}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+{block name='script'}
+<script>
+    function del(obj,goods_id){
+        if(window.confirm('确认删除该商品吗？')){
+            $.post("{:url('Goods/del')}",{'goods_id':goods_id},function(data){
+                alert(data.msg);
+                if(data.code){
+                    $(obj).parents('tr').remove();
+                }
+            },'json');
+        }
+    }
+
+    function is_show(obj,goods_id){
+        var is_show = $(obj).attr('is_show');
+
+        if( is_show == 1 ){
+            is_show = 0;
+            ts = '是否下架?';
+        }else{
+            is_show = 1;
+            ts = '是否上架?';
+        }
+
+        if(window.confirm(ts)){
+            $.post("{:url('Goods/is_show')}",{'goods_id':goods_id,'is_show':is_show},function(data){
+                if(data.code){
+                    $(obj).attr('is_show',is_show);
+                    if( is_show ){
+                        $(obj).parents('tr').find('td').eq(4).html('已上架');
+                        $(obj).html('下架');
+                        alert('上架成功！');
+                    }else{
+                        $(obj).parents('tr').find('td').eq(4).html('未上架');
+                        $(obj).html('上架');
+                        alert('下架成功！');
+                    }
+                }
+            },'json');
+        }
+    }
+
+    function goods_sort(obj){
+        var sort = $(obj).val();
+        var goods_id = $(obj).attr('data-id');
+        $.post('{:url('goods/edit_sort')}',{'sort':sort,'goods_id':goods_id},function(res){
+            if(res.status != 1){
+                layer.msg(res.msg);
+            }else{
+                layer.msg('修改成功',{'icon':1})
+            }
+        },'json')
+    }
+
+    function is_show_all(is_show){
+
+        var goods_id = '';
+        var flag = 0
+        $('.ch_item').each(function(k,v){
+            if( $(v).is(':checked') ){
+                flag = 1;
+                goods_id += $(v).val() + ',';
+            }
+        });
+        if( !flag ){
+            if( is_show == 1 ){
+                alert('请勾选需要批量上架的ID！');
+            }else{
+                alert('请勾选需要批量下架的ID！');
+            }
+        }
+        goods_id = goods_id.substring(0, goods_id.length - 1);
+
+        $.post("{:url('Goods/is_show_all')}",{'goods_id':goods_id,'is_show':is_show},function(data){
+            if(data.code){
+                if( is_show ){
+                    alert('批量上架成功！');
+                }else{
+                    alert('批量下架成功！');
+                }
+                location.reload();
+            }
+        },'json');
+
+    }
+
+    function del_all(obj,goods_id){
+        var goods_id = '';
+        var flag = 0
+        $('.ch_item').each(function(k,v){
+            if( $(v).is(':checked') ){
+                flag = 1;
+                goods_id += $(v).val() + ',';
+            }
+        });
+        if( !flag ){
+            alert('请勾选需要批量删除的ID！');
+            return;
+        }
+        goods_id = goods_id.substring(0, goods_id.length - 1);
+
+        if(window.confirm('确认批量删除商品吗？')){
+            $.post("{:url('Goods/del_all')}",{'goods_id':goods_id},function(data){
+                if(data.code){
+                    alert('批量删除成功！');
+                    location.reload();
+                }else{
+                    alert('批量删除失败！');
+                }
+            },'json');
+        }
+    }
+
+    //排序
+    function order(obj){
+        order = $(obj).attr('data-id');
+        location.href="{:url('index')}?order="+order;
+    }
+
+    $('th span').each(function(k,v){
+        var tmp_order = '{$order}';
+        if(tmp_order == $(v).attr('data-id')){
+          if($(v).attr('class') == 'triangle-x'){
+              $(v).addClass('Highlight-x');
+          }
+          if($(v).attr('class') == 'triangle-s'){
+              $(v).addClass('Highlight-s');
+          }
+            // $(v).addClass('red');
+        }
+    })
+
+</script>
+{/block}

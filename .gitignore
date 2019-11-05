@@ -1,0 +1,17 @@
+.idea
+.user.ini
+composer.lock
+*.log
+runtime
+.htaccess
+/public/upload
+/public/uploads
+/application/database.php
+/ueditor/php/upload
+/upload
+/logs
+logs
+/public/test
+.well-known
+*.tar.gz
+*.txt

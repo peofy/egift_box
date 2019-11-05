@@ -1,0 +1,128 @@
+{extend name="common:base" /}
+{block name="style"}
+<style type="text/css">
+.table>thead>tr>th {
+    text-align: center;
+}
+</style>
+{/block}
+
+{block name="content"}
+<div class="ibox">
+    <div class="ibox-content">
+            <div class="row">
+               <form  method="get" action="{:url()}">
+                    <div class="col-sm-1">
+                            <div class="form-group">
+                                <label class="control-label" for="order_id">ID</label>
+                                <input type="text" placeholder="会员id" name="id" value="{$id}" class="form-control">
+                            </div>
+                        </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="control-label" for="invoice_no">会员信息</label>
+                            <input type="text" placeholder="会员信息" name="nickname" value="{$nickname}" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="form-group">
+                            <label class="control-label" for="status">　</label>
+                            <div>
+                                <button class="btn btn-primary">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+           </div>
+       </div>
+        <div class="ibox-content">
+            <div class="table-responsive" style="overflow:hidden">
+                <table class="table  table-bordered table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>会员ID</th>
+                            <th>昵称</th>
+                            <th>头像</th>
+                            <th>性别</th>
+                            <th>生日</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead> 
+                    <tbody>
+                        {volist name="list" id="vo"}
+                        <tr>
+                            <td>{$vo.id}</td>
+                            <td>{$vo.nickname}</td>
+                            <td><img src="{$vo.avatar}" width="50" alt=""></td>
+                            <td>{if condition="$vo.sex eq 1"}男{elseif condition="$vo.sex eq 2"}女{/if}</td>
+                            <td>{$vo.birthday}</td>
+                            <td>{$vo.createtime|date='Y-m-d',###}</td>
+                            <td  style="overflow:visible;">
+                                <div class="btn-group btn-group-sm" >
+                                        <!-- <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="javascript:;">操作 <span class="caret"></span></a> -->
+                                    <ul class="dropdown-menu dropdown-menu-left" role="menu" style='z-index: 9999'>
+                                        <!-- <li><a href="{:url('member/member_edit',array('id' => $vo['id']));}" title="会员详情"><i class='fa fa-edit'></i> 会员详情</a></li> -->
+                                        <!-- <li><a href="{:url('order/index', array('kw'=>$vo['mobile']))}" title='会员订单'><i class='fa fa-list'></i> 会员订单</a></li> -->
+                                        <!-- <li><a href="{:url('finance/integral_Recharge', array('id'=>$vo['id']))}" title='充值积分'><i class='fa fa-credit-card'></i> 充值积分</a></li> -->
+                                        <!-- <li><a  href="javascript:void(0);" title='删除会员' class="delete" id = "{$vo['id']}"><i class='fa fa-remove'></i> 删除会员</a></li> -->
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+                {$list->render()}
+            </div>
+        </div>
+                
+
+
+{/block}
+{block name="script"}
+<script>
+$(function() {
+    // 删除
+    $('.delete').click(function(e) {
+        var id = this.id;
+        layer.confirm('是否确定删除', { icon: 3, title: '提示' }, function(index) {
+
+            $.post("{:url('member/member_delete')}", { id: id }, function(res) {
+                if (res.code) {
+                    layer.msg(res.msg, { icon: 6 });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    layer.msg(res.msg, { icon: 5 });
+                }
+            });
+        });
+    });
+      // 设置黑名单
+      $('.isblack').click(function(e) {
+        var isblack     = $(this).attr('isblack');
+        var id          = $(this).attr('uid');
+        if(isblack == 1){
+            var stat = '确定取消黑名单';
+        }else{
+            var stat = '确定设置黑名单';
+        }
+        layer.confirm(stat, { icon: 3, title: '提示' }, function(index) {
+
+            $.post("{:url('member/member_isblack')}", { id: id,isblack:isblack }, function(res) {
+                if (res.code) {
+                    layer.msg(res.msg, { icon: 6 });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    layer.msg(res.msg, { icon: 5 });
+                }
+            });
+        });
+    });
+});
+</script>
+{/block}
